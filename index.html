@@ -19,10 +19,20 @@
         -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
       }
 
-      /* Full-viewport shell. Solid dark = clean loading backdrop + clean letterbox bars. */
+      /* Full-viewport shell: the game's own key art, blurred and darkened, so a player can tell
+         WHICH game is loading while the icon and the progress bar stay the only things in focus.
+         Baked into a 39 KB JPG by Tools/bake_loading_bg.py - never a CSS filter: a full-screen
+         blur() is expensive on a phone and this screen has to render smoothly while the device is
+         downloading tens of megabytes of wasm.
+
+         `cover`, never `100% 100%`. Cover crops; stretch distorts, and the art stretched into a
+         wide letterboxed viewport looks broken.
+
+         #0e0e12 stays underneath as the fallback if the JPG is slow, and is what paints the
+         letterbox bars. It must stay identical to GROUND in bake_loading_bg.py. */
       #unity-container {
         position: fixed; inset: 0;
-        background: #0e0e12;
+        background: #0e0e12 url('TemplateData/loading-bg.jpg') center / cover no-repeat;
       }
 
       /* Canvas is positioned by JS (letterbox). Transparent so the backdrop shows through
