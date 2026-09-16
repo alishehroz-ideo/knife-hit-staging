@@ -29,7 +29,13 @@
          wide letterboxed viewport looks broken.
 
          #0e0e12 stays underneath as the fallback if the JPG is slow, and is what paints the
-         letterbox bars. It must stay identical to GROUND in bake_loading_bg.py. */
+         letterbox bars. It must stay identical to GROUND in bake_loading_bg.py.
+
+         AND IT IS TAKEN BACK OFF WHEN THE GAME STARTS - see the container.style.background
+         line beside the killEl() calls in createUnityInstance().then() below. Because this
+         element paints the bars, leaving the image set keeps painting blurred art above and
+         below the game for the entire session. The two halves are forty lines and one
+         language apart, so they name each other on purpose: change one, change the other. */
       #unity-container {
         position: fixed; inset: 0;
         background: #0e0e12 url('TemplateData/loading-bg.jpg') center / cover no-repeat;
@@ -281,6 +287,20 @@
           killEl("#unity-progress-bar-empty");
           killEl("#unity-progress-percent");
           killEl("#unity-loading-bar");
+
+          // ...and the BACKDROP, which is the half of this that is easy to miss. See the
+          // #unity-container rule in the <style> block above: that element is the FULL
+          // VIEWPORT and the canvas is letterboxed inside it, so its background is also what
+          // paints the LETTERBOX BARS. killEl() above tears down the spinner, the tenant logo
+          // and the progress bar; nothing clears the container. Leave the image set and a band
+          // of blurred key art sits above and below the game for the whole session, with a
+          // visible seam at the canvas edge - which reads as the game rendering wrong, not as
+          // a loading leftover.
+          //
+          // #0e0e12 must stay identical to the fallback in that CSS rule and to GROUND in
+          // Tools/bake_loading_bg.py.
+          var container = document.querySelector("#unity-container");
+          if (container) container.style.background = "#0e0e12";
 
           resizeCanvas();
 
